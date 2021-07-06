@@ -63,13 +63,13 @@ syn match   souffleDefCSep       ":" contained containedin=souffleDefCType
 syn match   souffleDefCType      ": *[a-zA-Z0-9?_-]*" contained containedin=souffleDefCName contains=souffleDefCSep,souffleTypeId
 
 " Rules
-syn region  souffleRule           start="[a-zA-Z0-9?_-]*(" end="\." contains=souffleRuleHead,souffleRuleBody fold
-syn match   souffleRuleHead       "[a-zA-Z0-9?_-]*([^)]*)" contained containedin=souffleRule contains=souffleRelId,souffleRuleHeadBody
+syn region  souffleRule           start="[a-zA-Z0-9?_-]\+(" end="\." contains=souffleRuleHead,souffleRuleBody fold keepend
+syn match   souffleRuleHead       "[a-zA-Z0-9?_-]\+([^)]*)" contained containedin=souffleRule contains=souffleRelId,souffleRuleHeadBody
 syn match   souffleRuleHeadBody   "(.*)" contained containedin=souffleRuleHead contains=souffleVarId,souffleConstantId,souffleOp
-syn region  souffleRuleBody       start=":-" end="\." contained contains=souffleRuleBodyStart,souffleRuleBodyEnd,souffleRuleBodyTerm,souffleConstantId,souffleOp,souffleVarId keepend
-syn match   souffleRuleBodyStart  ":-" contained containedin=souffleRuleBody
+syn region  souffleRuleBody       start=":\-" end="\." contained contains=souffleRuleBodyStart,souffleRuleBodyEnd,souffleRuleBodyTerm,souffleConstantId,souffleOp,souffleVarId keepend
+syn match   souffleRuleBodyStart  ":\-" contained containedin=souffleRuleBody
 syn match   souffleRuleBodyEnd    "\." contained containedin=souffleRuleBody
-syn match   souffleRuleBodyTerm   "[a-zA-Z0-9?_-]* *([^)]*)" contained containedin=souffleRuleBody contains=souffleRelId,souffleRuleTBody
+syn match   souffleRuleBodyTerm   "[a-zA-Z0-9?_-]\+ *([^)]*)" contained containedin=souffleRuleBody contains=souffleRelId,souffleRuleTBody
 syn match   souffleRuleTBody      "([^)]*)" contained containedin=souffleRuleBodyTerm contains=souffleConstantId,souffleVarId
 
 let b:current_syntax = "souffle"
