@@ -7,9 +7,17 @@ if exists("b:current_syntax")
   finish
 endif
 
+let IDENT = '"[_?a-zA-Z][_?a-zA-Z0-9]\+\|[?a-zA-Z]"'
+
+" Unary operator
+syn match souffleUnaryOp "[-]"
+      \ contained skipwhite skipempty
+      \ nextgroup=@souffleArgument
+hi def link souffleUnaryOp Operator
+
 " Binary operator
-syn match souffleBinaryOp "[-+*/%]" 
-      \ contained
+syn match souffleBinaryOp "[-+*/%^]"
+      \ contained skipwhite skipempty
       \ nextgroup=@souffleArgument
 hi def link souffleBinaryOp Operator
 
@@ -26,9 +34,9 @@ syn cluster souffleCommentContent contains=souffleTodo
 syn keyword souffleTodo           TODO FIXME NOTE contained
 
 " Relation declaration identifier
-syn match   souffleRelationDeclIdentId "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained skipwhite skipempty
-      \ nextgroup=@souffleRelationDeclIdentSep,souffleRelationDeclAttributes
+exec 'syn match   souffleRelationDeclIdentId ' . IDENT 
+      \ . ' contained skipwhite skipempty'
+      \ . ' nextgroup=@souffleRelationDeclIdentSep,souffleRelationDeclAttributes'
 hi def link souffleRelationDeclIdentId PreProc
 syn cluster souffleRelationDeclIdent contains=souffleRelationDeclIdentId
 syn region  souffleRelationDeclIdentBlockComment  start="/\*" end="\*/"
@@ -44,7 +52,7 @@ hi def link souffleRelationDeclIdentInlineComment Comment
 syn cluster souffleRelationDeclIdent add=souffleRelationDeclIdentBlockComment,souffleRelationDeclIdentInlineComment
 
 " Relation declaration identifier separator
-syn match souffleRelationDeclIdentSepSign ","
+syn match   souffleRelationDeclIdentSepSign ","
       \ contained skipwhite skipempty
       \ nextgroup=@souffleRelationDeclIdent
 syn cluster souffleRelationDeclIdentSep contains=souffleRelationDeclIdentSepSign
@@ -62,43 +70,41 @@ hi def link souffleRelationDeclIdentSepInlineComment Comment
 syn cluster souffleRelationDeclIdentSep add=souffleRelationDeclIdentSepBlockComment,souffleRelationDeclIdentSepInlineComment
 
 " Relation declaration attributes
-syn region souffleRelationDeclAttributes matchgroup=PreProc start="(" end=")"
+syn region  souffleRelationDeclAttributes matchgroup=PreProc start="(" end=")"
       \ contained skipwhite skipempty
       \ contains=@souffleRelationAttributeIdent
       \ nextgroup=souffleRelationQualifier,souffleRelationChoiceDomain
 
 " Relation attribute identifier
-syn match souffleRelationAttributeIdentId "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained skipwhite skipempty
-      \ nextgroup=@souffleRelationAttributeTypeSep
+exec 'syn match   souffleRelationAttributeIdentId ' . IDENT . ' contained skipwhite skipempty nextgroup=@souffleRelationAttributeTypeSep'
 hi def link souffleRelationAttributeIdentId Identifier
 syn cluster souffleRelationAttributeIdent contains=souffleRelationAttributeIdentId
 
 " Relation attribute type separator
-syn match souffleRelationAttributeTypeSepSign ":"
+syn match   souffleRelationAttributeTypeSepSign ":"
       \ contained skipwhite skipempty
       \ nextgroup=@souffleRelationAttributeTypeIdent
 hi def link souffleRelationAttributeTypeSepSign Statement
 syn cluster souffleRelationAttributeTypeSep contains=souffleRelationAttributeTypeSepSign
 
 " Relation attribute type identifier
-syn match souffleRelationAttributeTypeIdentId "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained skipwhite skipempty
-      \ nextgroup=@souffleRelationAttributeSep,@souffleRelationAttributeTypeQualifiedSep
+exec 'syn match   souffleRelationAttributeTypeIdentId ' . IDENT
+      \ . ' contained skipwhite skipempty'
+      \ . ' nextgroup=@souffleRelationAttributeSep,@souffleRelationAttributeTypeQualifiedSep'
 hi def link souffleRelationAttributeTypeIdentId Type
 syn cluster souffleRelationAttributeTypeIdent contains=souffleRelationAttributeTypeIdentId
 
 " Relation attribute type qualified identifier separator
-syn match souffleRelationAttributeTypeQualifiedSepSign "\."
+syn match   souffleRelationAttributeTypeQualifiedSepSign "\."
       \ contained skipwhite skipempty
       \ nextgroup=@souffleRelationAttributeTypeIdent
 hi def link souffleRelationAttributeTypeQualifiedSepSign Operator
 syn cluster souffleRelationAttributeTypeQualifiedSep contains=souffleRelationAttributeTypeQualifiedSepSign
 
 " Type declaration identifier
-syn match   souffleTypeDeclIdentId "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-  \ contained skipwhite skipempty
-  \ nextgroup=@souffleSubtypeDecl,@souffleEquivTypeDecl
+exec 'syn match   souffleTypeDeclIdentId ' .IDENT 
+      \ . ' contained skipwhite skipempty'
+      \ . ' nextgroup=@souffleSubtypeDecl,@souffleEquivTypeDecl'
 hi def link souffleTypeDeclIdentId   Type
 syn cluster souffleTypeDeclIdent
       \ contains=souffleTypeDeclIdentId
@@ -116,15 +122,15 @@ hi def link souffleTypeDeclIdentBlockComment  Comment
 hi def link souffleTypeDeclIdentInlineComment Comment
 
 " Equivalent type declaration
-syn match souffleEquivTypeDeclSign "="
+syn match   souffleEquivTypeDeclSign "="
       \ contained skipwhite skipempty
       \ nextgroup=@souffleTypeDef
-syn region souffleEquivTypeDeclBlockComment
+syn region  souffleEquivTypeDeclBlockComment
       \ start="/\*" end="\*/"
       \ nextgroup=@souffleEquivTypeDecl
       \ contains=@souffleCommentContent
       \ contained skipwhite skipempty
-syn region souffleEquivTypeDeclInlineComment start="//" end="$"
+syn region  souffleEquivTypeDeclInlineComment start="//" end="$"
       \ nextgroup=@souffleEquivTypeDecl
       \ contains=@souffleCommentContent
       \ contained skipempty
@@ -134,9 +140,8 @@ hi def link souffleEquivTypeDeclBlockComment  Comment
 hi def link souffleEquivTypeDeclInlineComment Comment
 
 " Type definition
-syn match souffleTypeId "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained
-hi def link souffleTypeId        Type
+exec 'syn match   souffleTypeId ' . IDENT . ' contained'
+hi def link souffleTypeId Type
 syn cluster souffleTypeDef
       \ contains=souffleTypeId
 syn region  souffleTypeDefBlockComment
@@ -154,16 +159,16 @@ hi def link souffleTypeDefBlockComment   Comment
 hi def link souffleTypeDeflInlineComment Comment
 
 " Sub-Type definition
-syn match souffleSubtypeDeclSign "<:"
+syn match   souffleSubtypeDeclSign "<:"
       \ contained skipwhite skipempty
       \ nextgroup=souffleTypeName
 hi def link souffleSubtypeDeclSign Operator
 syn cluster souffleSubtypeDecl contains=souffleSubtypeDeclSign
 
 " Type name
-syn match souffleTypeName "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained skipwhite skipempty
-      \ nextgroup=@souffleStatements,souffleTypeQualifiedNameSep
+exec 'syn match souffleTypeName ' .IDENT 
+      \ . ' contained skipwhite skipempty'
+      \ . ' nextgroup=@souffleStatements,souffleTypeQualifiedNameSep'
 hi def link souffleTypeName Type
 
 " Type qualified name separator
@@ -173,9 +178,9 @@ syn match souffleTypeQualifiedNameSep "\."
 hi def link souffleTypeQualifiedNameSep Operator
 
 " Atom or Preprocessor macro
-syn match souffleAtomIdent     "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ skipwhite skipempty
-      \ nextgroup=souffleAtomArguments,souffleAtomQualifiedIdentSep,@souffleStatements
+exec 'syn match   souffleAtomIdent ' .IDENT 
+      \ . ' skipwhite skipempty'
+      \ . ' nextgroup=souffleAtomArguments,souffleAtomQualifiedIdentSep,@souffleStatements'
 hi def link souffleAtomIdent    Function
 syn match souffleAtomQualifiedIdentSep "\."
       \ contained skipwhite skipempty
@@ -241,17 +246,21 @@ syn cluster souffleConstraint contains=@souffleArgument,souffleMatch,souffleCont
 " Argument
 syn cluster souffleArgument contains=@souffleConstant,souffleVariable,souffleNil,souffleLitRecord,souffleLitADT,souffleParenArgument,souffleAs,souffleUserdefFunctor,souffleIntrinsicFunctor,souffleAggregator,souffleUnaryOp,souffleBinaryOp
 
-syn match souffleVariable "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained
+exec 'syn match   souffleVariable ' . IDENT . ' contained'
 hi def link souffleVariable Identifier
 
+syn match souffleUnaryOp "\<\(bnot\|lnot\)\>"
+      \ contained skipwhite skipempty
+      \ nextgroup=@souffleArgument
+hi def link souffleUnaryOp Operator
+
 " Binary operator
-syn match souffleBinaryOp "\<\(land\|lor\|lxor\|band\|bor\|bxor\|bshl\|bshr\|bshru\)\>"
+syn match   souffleBinaryOp "\<\(land\|lor\|lxor\|band\|bor\|bxor\|bshl\|bshr\|bshru\)\>"
       \ contained skipwhite skipempty
       \ nextgroup=@souffleArgument
 
 " Intrinsic functor
-syn match souffleIntrinsicFunctor "\<\(ord\|to_float\|to_number\|to_string\|to_unsigned\|cat\|strlen\|substr\)\>"
+syn match   souffleIntrinsicFunctor "\<\(ord\|to_float\|to_number\|to_string\|to_unsigned\|cat\|strlen\|substr\)\>"
       \ contained skipwhite skipempty
       \ nextgroup=souffleBodyAtomArguments
 hi def link souffleIntrinsicFunctor Function
@@ -266,7 +275,7 @@ hi def link souffleUserdefFunctor Function
 syn cluster souffleConstant contains=souffleLitString,souffleLitNumber,souffleLitUnsigned,souffleLitFloat,souffleLitIPv4
 
 " Literal string
-syn region souffleLitString matchgroup=String start=/"/ end=/"/ skip=/\\"/
+syn region souffleLitString matchgroup=String start=/\v"/ end=/\v"/ skip=/\v\\./
       \ contained skipwhite skipempty
       \ nextgroup=@souffleComment
 hi def link souffleLitString String
@@ -294,7 +303,7 @@ hi def link souffleLitUnsigned Number
 " Body Atom detection
 " Does not detect case where a comment is inserted between the identifier and
 " the opening parenthesis
-syn match souffleBodyAtomDetection "\([a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+\)\([ \t\n]*\.[ \t\n]*[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+\)*[ \t\n]*("
+syn match souffleBodyAtomDetection "\([?a-zA-Z]\|[_?a-zA-Z][_?a-zA-Z0-9]\+\)\([ \t\n]*\.[ \t\n]*\([?a-zA-Z]\|[_?a-zA-Z][_?a-zA-Z0-9]\+\)\)*[ \t\n]*("
       \ contained contains=souffleBodyAtomIdent,@souffleComment
 
 " Body Atom identifier
@@ -317,47 +326,47 @@ syn region souffleBodyAtomArguments
       \ contains=@souffleArgument,@souffleComment
 
 " Nil literal value
-syn match souffleNil "\<nil\>" contained
+syn match   souffleNil "\<nil\>" contained
 hi def link souffleNil Constant
 
 " True constraint
-syn match souffleTrue "\<true\>" contained
+syn match   souffleTrue "\<true\>" contained
 hi def link souffleTrue Boolean
 
 " False constraint
-syn match souffleFalse "\<false\>" contained
+syn match   souffleFalse "\<false\>" contained
 hi def link souffleFalse Boolean
 
 " Directive name
-syn match souffleDirectiveName  "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained skipwhite skipempty
-      \ nextgroup=souffleDirectiveQualifiedNameSep,souffleDirectiveNameSep,souffleDirectiveArglist
+exec 'syn match   souffleDirectiveName ' .IDENT 
+      \ . ' contained skipwhite skipempty'
+      \ . ' nextgroup=souffleDirectiveQualifiedNameSep,souffleDirectiveNameSep,souffleDirectiveArglist'
 hi def link souffleDirectiveName PreProc
 
 " Directive qualified name separator
-syn match souffleDirectiveQualifiedNameSep "\."
+syn match   souffleDirectiveQualifiedNameSep "\."
       \ contained skipwhite skipempty
       \ nextgroup=souffleDirectiveName
 hi def link souffleDirectiveQualifiedNameSep Operator
 
 " Directive name separator
-syn match souffleDriectiveNameSep ","
+syn match   souffleDriectiveNameSep ","
       \ contained skipwhite skipempty
       \ nextgroup=souffleDirectiveArglist
 
 " Directive arguments list
-syn region souffleDirectiveArglist start="(" end=")"
+syn region  souffleDirectiveArglist start="(" end=")"
       \ contained
       \ contains=souffleDirectiveArgumentIdent
 
 " Directive argument identifier
-syn match souffleDirectiveArgumentIdent "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained skipwhite skipempty
-      \ nextgroup=souffleDirectiveArgumentEqual
+exec 'syn match   souffleDirectiveArgumentIdent ' . IDENT
+      \ . ' contained skipwhite skipempty'
+      \ . ' nextgroup=souffleDirectiveArgumentEqual'
 hi def link souffleDirectiveArgumentIdent Identifier
 
 " Directive argument equal sign
-syn match souffleDirectiveArgumentEqual "="
+syn match   souffleDirectiveArgumentEqual "="
       \ contained skipwhite skipempty
       \ nextgroup=@souffleDirectiveArgumentValue
 
@@ -365,22 +374,24 @@ syn match souffleDirectiveArgumentEqual "="
 syn cluster souffleDirectiveArgumentValue contains=souffleLitString,souffleLitNumber,souffleTrue,souffleFalse,souffleIdent
 
 " Souffle identifier
-syn match souffleIdent "[a-zA-Z][_?a-zA-Z0-9]*\|[_?][_?a-zA-Z0-9]\+"
-      \ contained
+exec 'syn match   souffleIdent ' . IDENT . ' contained'
 hi def link souffleIdent Identifier
 
 " Statements
-syn match   souffleTypeKey       "\.type\>" skipwhite skipempty nextgroup=@souffleTypeDeclIdent
-hi def link souffleTypeKey        Statement
+syn match   souffleTypeKey      "\.type\>" skipwhite skipempty nextgroup=@souffleTypeDeclIdent
+hi def link souffleTypeKey      Statement
 
-syn match   souffleDeclKey       "\.decl\>" skipwhite skipempty nextgroup=@souffleRelationDeclIdent
-hi def link souffleDeclKey        Statement
+syn match   souffleDeclKey      "\.decl\>" skipwhite skipempty nextgroup=@souffleRelationDeclIdent
+hi def link souffleDeclKey      Statement
 
-syn match   souffleInputKey      "\.input\>" skipwhite skipempty nextgroup=souffleDirectiveName
-hi def link souffleInputKey      Statement
+syn match   souffleInputKey     "\.input\>" skipwhite skipempty nextgroup=souffleDirectiveName
+hi def link souffleInputKey     Statement
 
-syn match   souffleOutputKey     "\.output\>" skipwhite skipempty nextgroup=souffleDirectiveName
-hi def link souffleOutputKey     Statement
+syn match   souffleOutputKey    "\.output\>" skipwhite skipempty nextgroup=souffleDirectiveName
+hi def link souffleOutputKey    Statement
+
+syn match   souffleIncludeKey   "\.include\>" skipwhite skipempty nextgroup=souffleLitString
+hi def link souffleIncludeKey   Statement
 
 syn cluster souffleStatements contains=souffleTypeKey,souffleDeclKey,souffleInputKey,souffleOutputKey
 
